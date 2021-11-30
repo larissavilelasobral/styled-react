@@ -1,71 +1,94 @@
-# Getting Started with Create React App
+# Pagina de Loading com Axios
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+Video Tutorial || [React Query Tutorial | Data Fetching with React-Query](https://youtu.be/46vKqPlTW2w).
 
-## Available Scripts
+## Codigo com Axios
 
-In the project directory, you can run:
+```
+import {useState, useEffect} from "react";
+import axios from "axios";
 
-### `yarn start`
+function App() {
+  const [isLoading, setLoading] = useState(false);
+  const [isError, setError] = useState(false);
+  const [data, setData] = useState({});
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
+  useEffect(() => {
+    const fetchData = async () => {
+      setError(false);
+      setLoading(true);
 
-The page will reload if you make edits.\
-You will also see any lint errors in the console.
+      try {
+        const response = await axios("https://random.dog/woof.json");
 
-### `yarn test`
+        setData(response.data);
+      } catch(error) {
+        setError(true);
+      }
+      setLoading(false);
+    };
+    fetchData();
+  }, []);
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+  if (isError) return <h1> Error, try again!</h1>;
+  if (isLoading) return <h1> loading...</h1>
+  return (
+    <div>
+      <img src={data.url} />
+    </div>
+  );
+}
 
-### `yarn build`
+export default App;
+```
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+### `npm i axios`
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+**Fazer instalação do `Axios`, no projeto!**
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+## Pagina Utilizando React Query
 
-### `yarn eject`
+### `npm i react-query`
 
-**Note: this is a one-way operation. Once you `eject`, you can’t go back!**
+Link da API de dogs [random.dog](https://github.com/AdenFlorian/random.dog).
 
-If you aren’t satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you’re on your own.
+### Codigo
 
-You don’t have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn’t feel obligated to use this feature. However we understand that this tool wouldn’t be useful if you couldn’t customize it when you are ready for it.
+```
+import { useQuery } from "react-query";
+import axios from "axios"
 
-## Learn More
+function App() {
+  const { isLoading, error, data } = useQuery("dogs", () =>
+    axios("https://random.dog/woof.json")
+  );
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+  if (error) return <h1> Error: {error.message}, try again!</h1>;
+  if (isLoading) return <h1> loading...</h1>
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+  return (
+    <div>
+      <img src={data.data.url} />
+    </div>
+  );
+}
 
-### Code Splitting
+export default App;
+```
+***foi adicionado no index.js mas a boa pratica indica adicionar no App.js***
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+```
+import { QueryClient, QueryClientProvider } from "react-query"
 
-### Analyzing the Bundle Size
+const queryClient = new QueryClient();
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `yarn build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
-# styled-react
+ReactDOM.render(
+  <React.StrictMode>
+    <QueryClientProvider client={queryClient}>
+      <App />
+    </QueryClientProvider>
+  </React.StrictMode>
+);
+```
+### Loading Pago com fetch
